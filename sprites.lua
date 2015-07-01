@@ -35,7 +35,8 @@ function Colors.init()
 
 	love.graphics.setBackgroundColor(Colors.background)
 	love.graphics.setColor(Colors.foreground)
-	love.graphics.setPoint(1,"rough")
+	love.graphics.setPointSize(1)
+	love.graphics.setPointStyle("rough")
 end
 
 Graphics = {}
@@ -54,14 +55,14 @@ function Graphics.imageSection( filename, xfraction, yfraction, wfraction, hfrac
 	local w = math.floor(wfraction * image:getWidth())
 	local h = math.floor(hfraction * image:getHeight())
 	
-	local frameBuffer = love.graphics.newFramebuffer( w, h )
-	love.graphics.setRenderTarget( frameBuffer )
+	local frameBuffer = love.graphics.newCanvas( w, h )
+	love.graphics.setCanvas( frameBuffer )
 	love.graphics.clear()
 	love.graphics.draw( image, -x, -y)
 	
 	
 	local img = love.graphics.newImage( frameBuffer:getImageData() )
-	love.graphics.setRenderTarget()
+	love.graphics.setCanvas()
 	return img
 end
 
@@ -176,15 +177,15 @@ function Graphics.initAnim( _strip, _w, _h, _frametime )
 		frame_timer = _frametime
 	}
 	
-	local frameBuffer = love.graphics.newFramebuffer( data.frame_w, data.frame_h )
-	love.graphics.setRenderTarget( frameBuffer )
+	local frameBuffer = love.graphics.newCanvas( data.frame_w, data.frame_h )
+	love.graphics.setCanvas( frameBuffer )
 	for i=0,data.frame_count-1 do
 		love.graphics.clear()
 		love.graphics.draw( _strip, -data.frame_w * i, 0)
 		frames[i] = love.graphics.newImage( frameBuffer:getImageData() )
 	end
 	data.strip = frames
-	love.graphics.setRenderTarget()
+	love.graphics.setCanvas()
 	return data
 end
 
@@ -364,22 +365,20 @@ function Graphics.toggleMode()
 end
 
 function Graphics.setWindowed()
-	local success = love.graphics.setMode( screensize[1], screensize[2], false, true, 0 )
+	local success = love.window.setMode( screensize[1], screensize[2], { fullscreen = false } )
 	Graphics.viewmode = 2
 	return success
 end
 
 function Graphics.setFullscreen()
-  local success = love.graphics.setMode( screensize[1], screensize[2], true, true, 0 )
+  local success = love.window.setMode( screensize[1], screensize[2], { fullscreen = true } )
 	Graphics.viewmode = 1
 	return success
 end
 
 function Graphics.drawtext(text, x, y)
-	love.graphics.setColorMode("modulate")
 	love.graphics.setColor(Colors.dark_black)
 	love.graphics.print(text,x,y)
-	love.graphics.setColorMode("replace")
 end
 
 function Graphics.drawCentered( image, x, y, reversed )
@@ -391,8 +390,8 @@ function Graphics.drawCentered( image, x, y, reversed )
 end
 
 function Graphics.prepareBackground()
-	local frameBuffer = love.graphics.newFramebuffer( screensize[1], screensize[2] )
-	love.graphics.setRenderTarget( frameBuffer )
+	local frameBuffer = love.graphics.newCanvas( screensize[1], screensize[2] )
+	love.graphics.setCanvas( frameBuffer )
 	love.graphics.clear()
 	
 	if Level.buildings then
@@ -404,12 +403,12 @@ function Graphics.prepareBackground()
 	end
 	
 	Graphics.backgroundImage = love.graphics.newImage( frameBuffer:getImageData() )
-	love.graphics.setRenderTarget()
+	love.graphics.setCanvas()
 end
 
 function Graphics.prepareTopLayer()
-	local frameBuffer = love.graphics.newFramebuffer( screensize[1], screensize[2] )
-	love.graphics.setRenderTarget( frameBuffer )
+	local frameBuffer = love.graphics.newCanvas( screensize[1], screensize[2] )
+	love.graphics.setCanvas( frameBuffer )
 	love.graphics.clear()
 
 	if Level.buildings then
@@ -421,7 +420,7 @@ function Graphics.prepareTopLayer()
 	end
 		
 	Graphics.topImage = love.graphics.newImage( frameBuffer:getImageData() )
-	love.graphics.setRenderTarget()
+	love.graphics.setCanvas()
 end
 
 function Graphics.init()

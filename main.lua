@@ -57,8 +57,6 @@ function love.load()
 	if not Graphics.setWindowed() then
 		love.event.push('q')
 	end
-	
-	love.graphics.setColorMode("replace")
 
 	Game.init()
 
